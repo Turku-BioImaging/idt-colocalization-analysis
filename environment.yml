@@ -1,5 +1,7 @@
 name: idt-colocalization-analysis
 channels:
-  - conda-forge
+  - defaults
 dependencies:
   - python=3.8
+  - scikit-image=0.18.3
+  - black
