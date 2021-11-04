@@ -1,0 +1,5 @@
+name: idt-colocalization-analysis
+channels:
+  - conda-forge
+dependencies:
+  - python=3.8
