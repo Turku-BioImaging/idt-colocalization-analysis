@@ -19,12 +19,16 @@ for idx, p in enumerate(first_img_paths):
     mask = io.imread(mask_paths[idx])
 
     pearson_r = functions.pearson(first_img, second_img, mask=mask)
+    manders_m1, manders_m2 = functions.manders(first_img, second_img)
+
     first_img_fname = os.path.basename(p)
     second_img_fname = os.path.basename(second_img_paths[idx])
     result = {
         "first_image_fname": first_img_fname,
         "second_image_fname": second_img_fname,
         "pearson_r": pearson_r,
+        "manders_m1": manders_m1,
+        "manders_m2": manders_m2,
     }
 
     results.append(result)

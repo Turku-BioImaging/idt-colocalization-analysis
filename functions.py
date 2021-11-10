@@ -1,5 +1,8 @@
 import numpy as np
 from scipy import stats
+from skimage import io, img_as_ubyte
+from skimage.filters import threshold_otsu
+import os
 
 
 def pearson(img1, img2, mask=None):
@@ -34,4 +37,30 @@ def pearson(img1, img2, mask=None):
 
 
 def manders(img1, img2):
-    return
+
+    # try with otsu threshold
+    img1_threshold = threshold_otsu(img1)
+    img2_threshold = threshold_otsu(img2)
+
+    binary_otsu_img1 = img1 > img1_threshold
+    binary_otsu_img2 = img2 > img2_threshold
+
+    io.imsave(
+        "tests/binary_otsu_img1.tif",
+        img_as_ubyte(binary_otsu_img1),
+        check_contrast=False,
+    )
+    io.imsave(
+        "tests/binary_otsu_img2.tif",
+        img_as_ubyte(binary_otsu_img2),
+        check_contrast=False,
+    )
+
+    # try with costes auto threshold
+
+    binary_combined = binary_otsu_img1 + binary_otsu_img2
+
+    m1 = np.sum(binary_otsu_img1) / np.sum(binary_combined)
+    m2 = np.sum(binary_otsu_img2) / np.sum(binary_combined)
+
+    return (m1, m2)
