@@ -33,4 +33,5 @@ for idx, p in enumerate(first_img_paths):
 
     results.append(result)
 
-print(results)
+df = pd.DataFrame(results)
+df.to_csv("results/colocalization_results.csv")
