@@ -60,7 +60,7 @@ def manders(img1, img2):
 
     binary_combined = binary_otsu_img1 + binary_otsu_img2
 
-    m1 = np.sum(binary_otsu_img1) / np.sum(binary_combined)
-    m2 = np.sum(binary_otsu_img2) / np.sum(binary_combined)
+    m1 = np.sum(binary_combined) / np.sum(binary_otsu_img1)
+    m2 = np.sum(binary_combined) / np.sum(binary_otsu_img2)
 
     return (m1, m2)
