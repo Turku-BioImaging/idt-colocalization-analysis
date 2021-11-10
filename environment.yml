@@ -7,3 +7,4 @@ dependencies:
   - pandas = 1.2.5
   - black
   - numpy=1.21.2
+  - tqdm=4.62.3

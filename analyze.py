@@ -2,6 +2,7 @@ import os
 import pandas as pd
 from glob import glob
 from skimage import io
+from tqdm import tqdm
 
 import functions
 
@@ -13,7 +14,7 @@ mask_paths = sorted(glob("data/masks/*"))
 results = []
 
 # loop through images
-for idx, p in enumerate(first_img_paths):
+for idx, p in tqdm(enumerate(first_img_paths)):
     first_img = io.imread(first_img_paths[idx])
     second_img = io.imread(second_img_paths[idx])
     mask = io.imread(mask_paths[idx])
