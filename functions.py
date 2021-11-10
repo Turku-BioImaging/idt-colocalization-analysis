@@ -45,16 +45,16 @@ def manders(img1, img2):
     binary_otsu_img1 = img1 > img1_threshold
     binary_otsu_img2 = img2 > img2_threshold
 
-    io.imsave(
-        "tests/binary_otsu_img1.tif",
-        img_as_ubyte(binary_otsu_img1),
-        check_contrast=False,
-    )
-    io.imsave(
-        "tests/binary_otsu_img2.tif",
-        img_as_ubyte(binary_otsu_img2),
-        check_contrast=False,
-    )
+    # io.imsave(
+    #     "tests/binary_otsu_img1.tif",
+    #     img_as_ubyte(binary_otsu_img1),
+    #     check_contrast=False,
+    # )
+    # io.imsave(
+    #     "tests/binary_otsu_img2.tif",
+    #     img_as_ubyte(binary_otsu_img2),
+    #     check_contrast=False,
+    # )
 
     # try with costes auto threshold
 
