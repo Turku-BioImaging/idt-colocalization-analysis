@@ -39,8 +39,8 @@ for idx, p in tqdm(enumerate(first_img_paths)):
     fname_img1 = os.path.basename(first_img_paths[idx]).replace(".tif", "_otsu.tif")
     fname_img2 = os.path.basename(second_img_paths[idx]).replace(".tif", "_otsu.tif")
     os.makedirs("results/otsu", exist_ok=True)
-    io.imsave("results/otsu/" + fname_img1, binary_otsu_img1)
-    io.imsave("results/otsu/" + fname_img2, binary_otsu_img2)
+    io.imsave("results/otsu/" + fname_img1, binary_otsu_img1, check_contrast=False)
+    io.imsave("results/otsu/" + fname_img2, binary_otsu_img2, check_contrast=False)
 
 df = pd.DataFrame(results)
 df.to_csv("results/colocalization_results.csv")
