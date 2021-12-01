@@ -55,7 +55,7 @@ def manders(img1, img2):
     #     img_as_ubyte(binary_otsu_img2),
     #     check_contrast=False,
     # )
-
+    
     # try with costes auto threshold
 
     binary_combined = binary_otsu_img1 & binary_otsu_img2
@@ -63,4 +63,4 @@ def manders(img1, img2):
     m1 = np.sum(binary_combined) / np.sum(binary_otsu_img1)
     m2 = np.sum(binary_combined) / np.sum(binary_otsu_img2)
 
-    return (m1, m2)
+    return (m1, m2, binary_otsu_img1, binary_otsu_img2)

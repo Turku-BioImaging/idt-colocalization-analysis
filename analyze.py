@@ -20,7 +20,9 @@ for idx, p in tqdm(enumerate(first_img_paths)):
     mask = io.imread(mask_paths[idx])
 
     pearson_r = functions.pearson(first_img, second_img, mask=mask)
-    manders_m1, manders_m2 = functions.manders(first_img, second_img)
+    manders_m1, manders_m2, binary_otsu_img1, binary_otsu_img2 = functions.manders(
+        first_img, second_img
+    )
 
     first_img_fname = os.path.basename(p)
     second_img_fname = os.path.basename(second_img_paths[idx])
@@ -33,6 +35,12 @@ for idx, p in tqdm(enumerate(first_img_paths)):
     }
 
     results.append(result)
+
+    fname_img1 = os.path.basename(first_img_paths[idx]).replace(".tif", "_otsu.tif")
+    fname_img2 = os.path.basename(second_img_paths[idx]).replace(".tif", "_otsu.tif")
+    os.makedirs("results/otsu", exist_ok=True)
+    io.imsave("results/otsu/" + fname_img1, binary_otsu_img1)
+    io.imsave("results/otsu/" + fname_img2, binary_otsu_img2)
 
 df = pd.DataFrame(results)
 df.to_csv("results/colocalization_results.csv")
