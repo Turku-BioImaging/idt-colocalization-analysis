@@ -1,6 +1,6 @@
 import numpy as np
 from scipy import stats
-from skimage import io, img_as_ubyte
+from skimage import io, img_as_ubyte, img_as_uint
 from skimage.filters import threshold_otsu
 import os
 
@@ -36,7 +36,7 @@ def pearson(img1, img2, mask=None):
     return np.corrcoef((img1_m, img2_m))[0][1]
 
 
-def manders(img1, img2):
+def manders_otsu(img1, img2):
 
     # try with otsu threshold
     img1_threshold = threshold_otsu(img1)
@@ -45,22 +45,48 @@ def manders(img1, img2):
     binary_otsu_img1 = img1 > img1_threshold
     binary_otsu_img2 = img2 > img2_threshold
 
-    # io.imsave(
-    #     "tests/binary_otsu_img1.tif",
-    #     img_as_ubyte(binary_otsu_img1),
-    #     check_contrast=False,
-    # )
-    # io.imsave(
-    #     "tests/binary_otsu_img2.tif",
-    #     img_as_ubyte(binary_otsu_img2),
-    #     check_contrast=False,
-    # )
-    
-    # try with costes auto threshold
-
     binary_combined = binary_otsu_img1 & binary_otsu_img2
 
     m1 = np.sum(binary_combined) / np.sum(binary_otsu_img1)
     m2 = np.sum(binary_combined) / np.sum(binary_otsu_img2)
 
     return (m1, m2, binary_otsu_img1, binary_otsu_img2)
+
+
+def manders_manual_threshold_200(img1, img2, mask):
+    # img1_thresholded = img_as_ubyte(img1 > 200)
+    # img2_thresholded = img_as_ubyte(img2 > 200)
+
+    # img1_masked = np.ma.masked_array(img1_thresholded, mask)
+    # img2_masked = np.ma.masked_array(img2_thresholded, mask)
+
+    # binary_combined = img1_masked & img2_masked
+
+    # m1 = np.sum(binary_combined) / np.sum(img1_masked)
+    # m2 = np.sum(binary_combined) / np.sum(img2_masked)
+
+    img1_thresholded = img_as_ubyte(img1 > 200)
+    img2_thresholded = img_as_ubyte(img2 > 200)
+
+    img1_masked = np.where(mask != 255, img1, 0)
+    img2_masked = np.where(mask != 255, img2, 0)
+
+    binary_combined = img1_masked & img2_masked
+
+    m1 = np.sum(binary_combined) / np.sum(img1_masked)
+    m2 = np.sum(binary_combined) / np.sum(img2_masked)
+
+    return (m1, m2, img1_masked, img2_masked)
+
+
+def manders_manual_threshold_300(img1, img2, mask):
+
+    img1_thresholded = img1 > 300
+    img2_thresholded = img2 > 300
+
+    binary_combined = img1_thresholded & img2_thresholded
+
+    m1 = np.sum(binary_combined) / np.sum(img1_thresholded)
+    m2 = np.sum(binary_combined) / np.sum(img2_thresholded)
+
+    return (m1, m2, img1_thresholded, img2_thresholded)
