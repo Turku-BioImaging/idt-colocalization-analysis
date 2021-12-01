@@ -65,18 +65,9 @@ def manders_manual_threshold_200(img1, img2, mask):
     # m1 = np.sum(binary_combined) / np.sum(img1_masked)
     # m2 = np.sum(binary_combined) / np.sum(img2_masked)
 
-    img1_thresholded = img_as_ubyte(img1 > 200)
-    img2_thresholded = img_as_ubyte(img2 > 200)
-
-    img1_masked = np.where(mask != 255, img1, 0)
-    img2_masked = np.where(mask != 255, img2, 0)
-
-    binary_combined = img1_masked & img2_masked
-
-    m1 = np.sum(binary_combined) / np.sum(img1_masked)
-    m2 = np.sum(binary_combined) / np.sum(img2_masked)
-
-    return (m1, m2, img1_masked, img2_masked)
+    img1_mask_indices = np.nonzero(mask)
+    # img1_mask = img1[img1_mask_indices]
+    print(img1_mask_indices)
 
 
 def manders_manual_threshold_300(img1, img2, mask):
