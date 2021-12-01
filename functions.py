@@ -1,6 +1,6 @@
 import numpy as np
 from scipy import stats
-from skimage import io, img_as_ubyte, img_as_uint
+from skimage import io, img_as_ubyte, img_as_uint, img_as_bool
 from skimage.filters import threshold_otsu
 import os
 
@@ -54,26 +54,26 @@ def manders_otsu(img1, img2):
 
 
 def manders_manual_threshold_200(img1, img2, mask):
-    # img1_thresholded = img_as_ubyte(img1 > 200)
-    # img2_thresholded = img_as_ubyte(img2 > 200)
+    img1_thresholded = img_as_ubyte(img1 > 200)
+    img2_thresholded = img_as_ubyte(img2 > 200)
 
-    # img1_masked = np.ma.masked_array(img1_thresholded, mask)
-    # img2_masked = np.ma.masked_array(img2_thresholded, mask)
+    img1_thresholded[~img_as_bool(mask)] = 0
+    img2_thresholded[~img_as_bool(mask)] = 0
 
-    # binary_combined = img1_masked & img2_masked
+    binary_combined = img1_thresholded & img2_thresholded
 
-    # m1 = np.sum(binary_combined) / np.sum(img1_masked)
-    # m2 = np.sum(binary_combined) / np.sum(img2_masked)
+    m1 = np.sum(binary_combined) / np.sum(img1_thresholded)
+    m2 = np.sum(binary_combined) / np.sum(img2_thresholded)
 
-    img1_mask_indices = np.nonzero(mask)
-    # img1_mask = img1[img1_mask_indices]
-    print(img1_mask_indices)
+    return (m1, m2, img1_thresholded, img2_thresholded)
 
 
 def manders_manual_threshold_300(img1, img2, mask):
+    img1_thresholded = img_as_ubyte(img1 > 300)
+    img2_thresholded = img_as_ubyte(img2 > 300)
 
-    img1_thresholded = img1 > 300
-    img2_thresholded = img2 > 300
+    img1_thresholded[~img_as_bool(mask)] = 0
+    img2_thresholded[~img_as_bool(mask)] = 0
 
     binary_combined = img1_thresholded & img2_thresholded
 

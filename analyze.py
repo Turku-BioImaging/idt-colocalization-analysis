@@ -28,9 +28,9 @@ for idx, p in tqdm(enumerate(first_img_paths)):
         first_img, second_img, mask
     )
 
-    # manders_manual_threshold_300 = functions.manders_manual_threshold_300(
-    #     first_img, second_img, mask
-    # )
+    manders_manual_threshold_300 = functions.manders_manual_threshold_300(
+        first_img, second_img, mask
+    )
 
     first_img_fname = os.path.basename(p)
     second_img_fname = os.path.basename(second_img_paths[idx])
@@ -42,8 +42,8 @@ for idx, p in tqdm(enumerate(first_img_paths)):
         "manders_m2": manders_m2,
         "manual_threshold_200_m1": manders_manual_threshold_200[0],
         "manual_threshold_200_m2": manders_manual_threshold_200[1],
-        # "manual_threshold_300_m1": manders_manual_threshold_300[0],
-        # "manual_threshold_300_m2": manders_manual_threshold_300[1],
+        "manual_threshold_300_m1": manders_manual_threshold_300[0],
+        "manual_threshold_300_m2": manders_manual_threshold_300[1],
     }
 
     results.append(result)
@@ -79,16 +79,16 @@ for idx, p in tqdm(enumerate(first_img_paths)):
         check_contrast=False,
     )
 
-    # fname_img1 = fname_img1.replace("thresh_200.tif", "thresh_300.tif")
-    # fname_img2 = fname_img2.replace("thresh_200.tif", "thresh_300.tif")
-    # io.imsave(
-    #     "results/threshold_300/" + fname_img1,
-    #     img_as_ubyte(manders_manual_threshold_300[2]),
-    # )
-    # io.imsave(
-    #     "results/threshold_300/" + fname_img2,
-    #     img_as_ubyte(manders_manual_threshold_300[3]),
-    # )
+    fname_img1 = fname_img1.replace("thresh_200.tif", "thresh_300.tif")
+    fname_img2 = fname_img2.replace("thresh_200.tif", "thresh_300.tif")
+    io.imsave(
+        "results/threshold_300/" + fname_img1,
+        img_as_ubyte(manders_manual_threshold_300[2]),
+    )
+    io.imsave(
+        "results/threshold_300/" + fname_img2,
+        img_as_ubyte(manders_manual_threshold_300[3]),
+    )
 
 
 df = pd.DataFrame(results)
