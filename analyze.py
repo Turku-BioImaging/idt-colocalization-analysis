@@ -21,7 +21,7 @@ for idx, p in tqdm(enumerate(first_img_paths)):
 
     pearson_r = functions.pearson(first_img, second_img, mask=mask)
     manders_m1, manders_m2, binary_otsu_img1, binary_otsu_img2 = functions.manders_otsu(
-        first_img, second_img
+        first_img, second_img, mask=mask
     )
 
     manders_manual_threshold_200 = functions.manders_manual_threshold_200(
