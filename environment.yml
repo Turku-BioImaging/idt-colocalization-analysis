@@ -2,9 +2,10 @@ name: idt-colocalization-analysis
 channels:
   - defaults
 dependencies:
-  - python=3.8
+  - python=3.9
   - scikit-image=0.18.3
   - pandas = 1.2.5
   - black
   - numpy=1.21.2
+  - pytest=6.2.5
   - tqdm=4.62.3
