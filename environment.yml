@@ -3,7 +3,7 @@ channels:
   - defaults
 dependencies:
   - python=3.9
-  - scikit-image=0.18.3
+  - scikit-image=0.19.1
   - pandas = 1.2.5
   - black
   - numpy=1.21.2
