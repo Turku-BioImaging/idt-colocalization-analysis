@@ -142,3 +142,41 @@ def test_it_does_not_accept_more_than_three_dimensions():
 
     with pytest.raises(BaseException):
         pearson(img1, img2)
+
+
+def test_accepts_float_images():
+    img1 = np.array(
+        [[0.0, 0.5, 0.0], [0.0, 0.5, 0.0], [0.0, 0.5, 0.0]], dtype=np.float64
+    )
+    img2 = np.array(
+        [[0.5, 0.0, 0.5], [0.5, 0.0, 0.5], [0.5, 0.0, 0.5]], dtype=np.float64
+    )
+
+    assert pearson(img1, img2) == -1.0
+
+
+def test_mask_array_length_must_match_images():
+    mask = np.array([[0, 0, 0], [0, 255, 0], [0, 0, 0]], dtype=np.uint8)
+    img1 = np.array([[255, 255, 255], [255, 255, 255]], dtype=np.uint8)
+    img2 = np.array([[125, 125, 125], [125, 125, 125]], dtype=np.uint8)
+
+    with pytest.raises(BaseException):
+        pearson(img1, img2, mask)
+
+
+def test_allows_mask_for_background_subtraction():
+    mask = np.array(
+        [[0, 0, 0, 0, 0], [0, 255, 255, 255, 0], [0, 0, 0, 0, 0]], dtype=np.uint8
+    )
+
+    img1 = np.array(
+        [[100, 25, 50, 33, 25], [57, 255, 255, 255, 33], [237, 21, 3, 45, 57]],
+        dtype=np.uint8,
+    )
+    img2 = np.array(
+        [[23, 25, 75, 28, 121], [13, 255, 255, 255, 44], [121, 11, 25, 88, 44]],
+        dtype=np.uint8,
+    )
+
+    assert pearson(img1, img2, mask) == 1.0
+
