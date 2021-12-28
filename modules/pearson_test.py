@@ -64,3 +64,16 @@ def test_returns_low_correlation_on_two_dimensional_random_images():
     img2 = np.random.rand(128, 128)
     assert pearson(img1, img2) < 0.04 and pearson(img1, img2) > -0.04
 
+
+def test_returns_three_dimensional_complete_correlation():
+    img1 = np.array([[50, 0, 50], [0, 25, 0], [50, 0, 50],], dtype=np.uint8)
+    img2 = np.array([[50, 0, 50], [0, 25, 0], [50, 0, 50],], dtype=np.uint8)
+
+    assert pearson(img1, img2) == 1.0
+
+
+def test_returns_three_dimensional_complete_anticorrelation():
+    img1 = np.array([[255, 0, 255], [0, 255, 0], [255, 0, 255],], dtype=np.uint8)
+    img2 = np.array([[0, 255, 0], [255, 0, 255], [0, 255, 0],], dtype=np.uint8)
+
+    assert pearson(img1, img2) == -1.0
