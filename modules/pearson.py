@@ -21,8 +21,12 @@ def pearson(img1: np.ndarray, img2: np.ndarray, mask: np.ndarray = None):
                 "Mask must be a numpy array with the same dimensions as the images."
             )
 
-        img1[~img_as_bool(mask)] = 0
-        img2[~img_as_bool(mask)] = 0
+        mask_indices = np.nonzero(mask)
+
+        img1_m = img1[mask_indices]
+        img2_m = img2[mask_indices]
+
+        return np.corrcoef(img1_m, img2_m)[0][1]
 
     correlation = np.corrcoef(img1, img2)
 
