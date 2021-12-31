@@ -6,11 +6,6 @@ from pearson import pearson
 
 
 def auto_threshold(img1: np.ndarray, img2: np.ndarray, mask: np.ndarray = None):
-    if isinstance(img1, np.ndarray) == False or isinstance(img2, np.ndarray) == False:
-        raise BaseException("Images must be a numpy arrays.")
-
-    if img1.shape != img2.shape:
-        raise BaseException("Images must have the same dimensions.")
 
     threshold = __find_minimum_threshold(img1, img2)
     img1_thresholded = __threshold(img1, threshold)
@@ -20,9 +15,10 @@ def auto_threshold(img1: np.ndarray, img2: np.ndarray, mask: np.ndarray = None):
 
 
 def __find_minimum_threshold(img1: np.ndarray, img2: np.ndarray) -> int:
-    assert img1.dtype == "uint8" and img2.dtype == "uint8"
+    assert img1.dtype == img2.dtype, "Images must be of the same numpy data type."
 
     max_intensity = max([np.max(img1), np.max(img2)])
+    max_threshold = 65535 if img1.dtype == "uint16" else 255
     threshold_value = max_intensity
 
     candidate_thresholds = []
@@ -51,7 +47,9 @@ def __find_minimum_threshold(img1: np.ndarray, img2: np.ndarray) -> int:
 
 
 def __threshold(img: np.ndarray, threshold: int) -> np.ndarray:
-    assert img.dtype == "uint8", "Image must be a numpy array of type uint8."
+    assert (
+        img.dtype == "uint8" or img.dtype == "uint16"
+    ), "Image must be a numpy array of type uint8."
     thresholded = img_as_ubyte(img > threshold)
     return thresholded
 
