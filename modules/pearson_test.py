@@ -180,3 +180,14 @@ def test_allows_mask_for_background_subtraction():
 
     assert pearson(img1, img2, mask) == 1.0
 
+
+def test_returns_nan_when_standard_deviation_of_either_image_is_zero() -> None:
+    img1 = np.array([25, 25, 25, 25], dtype=np.uint8)
+    img2 = np.array([1, 2, 3, 4, 5], dtype=np.uint8)
+
+    assert np.isnan(pearson(img1, img2))
+
+    img1 = np.array([10, 25, 35, 45, 55], dtype=np.uint8)
+    img2 = np.array([200, 200, 200, 200, 200], dtype=np.uint8)
+    assert np.isnan(pearson(img1, img2))
+

@@ -2,7 +2,7 @@ import numpy as np
 from skimage import img_as_bool
 
 
-def pearson(img1: np.ndarray, img2: np.ndarray, mask: np.ndarray = None):
+def pearson(img1: np.ndarray, img2: np.ndarray, mask: np.ndarray = None) -> float:
 
     if img1.ndim != img2.ndim:
         raise BaseException("Images must have the same dimensions.")
@@ -26,7 +26,13 @@ def pearson(img1: np.ndarray, img2: np.ndarray, mask: np.ndarray = None):
         img1_m = img1[mask_indices]
         img2_m = img2[mask_indices]
 
+        if (np.std(img1) == 0.0) or (np.std(img2) == 0.0):
+            return np.nan
+
         return np.corrcoef(img1_m, img2_m)[0][1]
+
+    if (np.std(img1) == 0.0) or (np.std(img2) == 0.0):
+        return np.nan
 
     correlation = np.corrcoef(img1, img2)
 
