@@ -19,13 +19,18 @@ def __find_minimum_threshold(img1: np.ndarray, img2: np.ndarray) -> int:
 
     max_intensity = max([np.max(img1), np.max(img2)])
     max_threshold = 65535 if img1.dtype == "uint16" else 255
-    threshold_value = max_intensity
+    threshold_value = min([max_intensity, max_threshold])
 
     candidate_thresholds = []
     while threshold_value > 0:
-        if threshold_value == 255:
-            threshold_value -= 1
-            continue
+        if img1.dtype == "uint16":
+            if threshold_value == 65535:
+                threshold_value -= 1
+                continue
+        if img1.dtype == "uint8":
+            if threshold_value == 255:
+                threshold_value -= 1
+                continue
 
         rho = pearson(
             __threshold(img1, threshold_value), __threshold(img2, threshold_value)
