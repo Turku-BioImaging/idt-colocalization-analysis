@@ -2,7 +2,7 @@
 from skimage import img_as_ubyte, img_as_bool
 import numpy as np
 
-from scipy import stats
+# from scipy import stats
 
 
 from pearson import pearson

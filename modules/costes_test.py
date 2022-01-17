@@ -31,20 +31,29 @@ def test_auto_threshold_exception_if_image_dtype_different() -> None:
         costes.auto_threshold(img1, img2)
 
 
-def test_auto_threshold_returns_threshold_value():
-    img1 = np.random.randint(0, 256, size=(200, 200)).astype(np.uint8)
-    img2 = (util.random_noise(img1, mode="s&p", amount=0.997) * 255).astype(np.uint8)
+# def test_auto_threshold_returns_threshold_value():
+#     img1 = np.random.randint(0, 256, size=(200, 200)).astype(np.uint8)
+#     img2 = (util.random_noise(img1, mode="s&p", amount=0.997) * 255).astype(np.uint8)
+#     thr1, thr2 = costes.auto_threshold(img1, img2)
+#     print(thr1, thr2)
+#     assert thr1 == thr2
+#     # assert threshold >= 0 and threshold < 255
+
+#     # img1 = np.random.randint(0, 65536, size=(200, 200)).astype(np.uint16)
+#     # img2 = (util.random_noise(img1, mode="s&p", amount=0.997) * 65535).astype(np.uint16)
+#     # thr1, thr2 = costes.auto_threshold(img1, img2)
+#     # print(thr1, thr2)
+#     # # assert threshold >= 0 and threshold < 65535
+#     # assert thr1 == thr2
+
+
+def test_auto_threshold_returns_threshold_values_for_test_images():
+    img1 = img_as_ubyte(io.imread("coloc_samples/01_cells.tif"))
+    img2 = img_as_ubyte(io.imread("coloc_samples/02_tubulin.tif"))
+
     thr1, thr2 = costes.auto_threshold(img1, img2)
     print(thr1, thr2)
     assert thr1 == thr2
-    # assert threshold >= 0 and threshold < 255
-
-    # img1 = np.random.randint(0, 65536, size=(200, 200)).astype(np.uint16)
-    # img2 = (util.random_noise(img1, mode="s&p", amount=0.997) * 65535).astype(np.uint16)
-    # thr1, thr2 = costes.auto_threshold(img1, img2)
-    # print(thr1, thr2)
-    # # assert threshold >= 0 and threshold < 65535
-    # assert thr1 == thr2
 
 
 # def test_auto_threshold_returns_threshold_for_three_dimensional_images():
