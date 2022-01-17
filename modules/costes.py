@@ -1,66 +1,91 @@
-import multiprocessing as mp
-from skimage import img_as_ubyte
+# import multiprocessing as mp
+from skimage import img_as_ubyte, img_as_bool
 import numpy as np
+
+from scipy import stats
+
 
 from pearson import pearson
 
 
-def auto_threshold(img1: np.ndarray, img2: np.ndarray, mask: np.ndarray = None):
+def auto_threshold(
+    img1: np.ndarray, img2: np.ndarray, mask: np.ndarray = None, scale_max: int = 255
+):
+    """
+    Calculate the Costes automatic threshold for img1 and img2 in a linear fashion. This implementation is based on CellProfiler's measurecolocalization module. If a binary mask is provided, then it is used for background subtraction prior to calculating the threshold.
+    """
 
-    threshold = __find_minimum_threshold(img1, img2)
-    img1_thresholded = __threshold(img1, threshold)
-    img2_thresholded = __threshold(img2, threshold)
+    if img1.dtype != img2.dtype:
+        raise BaseException("Image dtypes are not the same.")
 
-    return (threshold, img1_thresholded, img2_thresholded)
+    if mask is not None:
+        if mask.dtype != "uint8" or isinstance(mask, np.ndarray) == False:
+            raise BaseException("Mask must be a binary 8-bit numpy array.")
 
+        img1[~img_as_bool(mask)] = 0
+        img2[~img_as_bool(mask)] = 0
 
-def __find_minimum_threshold(img1: np.ndarray, img2: np.ndarray) -> int:
-    assert img1.dtype == img2.dtype, "Images must be of the same numpy data type."
+    i_step = 1 / scale_max
+    non_zero = (img1 > 0) | (img2 > 0)
+    xvar = np.var(img1[non_zero], axis=0, ddof=1)
+    yvar = np.var(img2[non_zero], axis=0, ddof=1)
 
-    max_intensity = max([np.max(img1), np.max(img2)])
-    max_threshold = 65535 if img1.dtype == "uint16" else 255
-    threshold_value = min([max_intensity, max_threshold])
+    xmean = np.mean(img1[non_zero], axis=0)
+    ymean = np.mean(img2[non_zero], axis=0)
 
-    candidate_thresholds = []
-    while threshold_value > 0:
-        if img1.dtype == "uint16":
-            if threshold_value == 65535:
-                threshold_value -= 1
-                continue
-        if img1.dtype == "uint8":
-            if threshold_value == 255:
-                threshold_value -= 1
-                continue
+    z = img1[non_zero] + img2[non_zero]
+    zvar = np.var(z, axis=0, ddof=1)
 
-        rho = pearson(
-            __threshold(img1, threshold_value), __threshold(img2, threshold_value)
-        )
+    covar = 0.5 * (zvar - (xvar + yvar))
 
-        if np.isnan(rho):
-            threshold_value -= 1
-            continue
-        elif rho <= 0.0:
+    denom = 2 * covar
+    num = (yvar - xvar) + np.sqrt((yvar - xvar) * (yvar - xvar) + 4 * (covar * covar))
+    a = num / denom
+    b = ymean - a * xmean
+
+    # Start at 1 step above the maximum value
+    img_max = max(img1.max(), img2.max())
+    i = i_step * ((img_max // i_step) + 1)
+
+    num_true = None
+    img1_max = img1.max()
+    img2_max = img2.max()
+
+    # Initialise without a threshold
+    # costReg = pearson(img1, img2, mask)
+    costReg, _ = stats.pearsonr(img1, img2)
+    thr_img1_c = i
+    thr_img2_c = (a * i) + b
+    while i > img1_max and (a * i) + b > img2_max:
+        i -= i_step
+    while i > i_step:
+        thr_img1_c = i
+        thr_img2_c = (a * i) + b
+        combt = (img1 < thr_img1_c) | (img2 < thr_img2_c)
+        try:
+            # Only run pearsonr if the input has changed.
+            if (positives := np.count_nonzero(combt)) != num_true:
+                # costReg = pearson(img1[combt], img2[combt])
+                costReg, _ = stats.pearsonr(img1[combt], img2[combt])
+                num_true = positives
+
+            if costReg <= 0:
+                break
+            elif i < i_step * 10:
+                i -= i_step
+            elif costReg > 0.45:
+                # We're way off, step down 10x
+                i -= i_step * 10
+            elif costReg > 0.35:
+                # Still far from 0, step 5x
+                i -= i_step * 5
+            elif costReg > 0.25:
+                # Step 2x
+                i -= i_step * 2
+            else:
+                i -= i_step
+        except ValueError:
             break
-        else:
-            item = [rho, threshold_value]
-            candidate_thresholds.append(item)
-            threshold_value -= 1
 
-    minimum_threshold = __get_threshold_from_candidates(candidate_thresholds)
-
-    return minimum_threshold
-
-
-def __threshold(img: np.ndarray, threshold: int) -> np.ndarray:
-    assert (
-        img.dtype == "uint8" or img.dtype == "uint16"
-    ), "Image must be a numpy array of type uint8."
-    thresholded = img_as_ubyte(img > threshold)
-    return thresholded
-
-
-def __get_threshold_from_candidates(candidates: list) -> int:
-    if len(candidates) == 0:
-        return 0
-    candidates.sort(key=lambda x: x[0])
-    return candidates[0][1]
+    # print(thr_img1_c, thr_img2_c)
+    return thr_img1_c, thr_img2_c
