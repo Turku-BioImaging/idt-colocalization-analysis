@@ -52,8 +52,7 @@ def auto_threshold(
     img2_max = img2.max()
 
     # Initialise without a threshold
-    # costReg = pearson(img1, img2, mask)
-    costReg, _ = stats.pearsonr(img1, img2)
+    costReg = pearson(img1, img2, mask)
     thr_img1_c = i
     thr_img2_c = (a * i) + b
     while i > img1_max and (a * i) + b > img2_max:
@@ -65,8 +64,7 @@ def auto_threshold(
         try:
             # Only run pearsonr if the input has changed.
             if (positives := np.count_nonzero(combt)) != num_true:
-                # costReg = pearson(img1[combt], img2[combt])
-                costReg, _ = stats.pearsonr(img1[combt], img2[combt])
+                costReg = pearson(img1[combt], img2[combt])
                 num_true = positives
 
             if costReg <= 0:
