@@ -55,32 +55,3 @@ def manders_otsu(img1, img2, mask):
 
     return (m1, m2, binary_otsu_img1, binary_otsu_img2)
 
-
-def manders_manual_threshold_200(img1, img2, mask):
-    img1_thresholded = img_as_ubyte(img1 > 200)
-    img2_thresholded = img_as_ubyte(img2 > 200)
-
-    img1_thresholded[~img_as_bool(mask)] = 0
-    img2_thresholded[~img_as_bool(mask)] = 0
-
-    binary_combined = img1_thresholded & img2_thresholded
-
-    m1 = np.sum(binary_combined) / np.sum(img1_thresholded)
-    m2 = np.sum(binary_combined) / np.sum(img2_thresholded)
-
-    return (m1, m2, img1_thresholded, img2_thresholded)
-
-
-def manders_manual_threshold_300(img1, img2, mask):
-    img1_thresholded = img_as_ubyte(img1 > 300)
-    img2_thresholded = img_as_ubyte(img2 > 300)
-
-    img1_thresholded[~img_as_bool(mask)] = 0
-    img2_thresholded[~img_as_bool(mask)] = 0
-
-    binary_combined = img1_thresholded & img2_thresholded
-
-    m1 = np.sum(binary_combined) / np.sum(img1_thresholded)
-    m2 = np.sum(binary_combined) / np.sum(img2_thresholded)
-
-    return (m1, m2, img1_thresholded, img2_thresholded)

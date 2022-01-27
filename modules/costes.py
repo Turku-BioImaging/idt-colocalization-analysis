@@ -1,11 +1,73 @@
-# import multiprocessing as mp
 from skimage import img_as_ubyte, img_as_bool
+import scipy
 import numpy as np
 
-# from scipy import stats
 
+def get_thresholds_using_bisection(img1: np.ndarray, img2: np.ndarray, scale_max=255):
+    """
+    Adapted from CellProfiler measurecolocalization module.
 
-from pearson import pearson
+    Finds the Costes Automatic Threshold for colocalization using a bisection algorithm.
+    Candidate thresholds are selected from within a window of possible intensities,
+    this window is narrowed based on the R value of each tested candidate.
+    We're looking for the first point below 0, and R value can become highly variable
+    at lower thresholds in some samples. Therefore the candidate tested in each
+    loop is 1/6th of the window size below the maximum value (as opposed to the midpoint).
+    """
+
+    non_zero = (img1 > 0) | (img2 > 0)
+    xvar = np.var(img1[non_zero], axis=0, ddof=1)
+    yvar = np.var(img2[non_zero], axis=0, ddof=1)
+
+    xmean = np.mean(img1[non_zero], axis=0)
+    ymean = np.mean(img2[non_zero], axis=0)
+
+    z = img1[non_zero] + img2[non_zero]
+    zvar = np.var(z, axis=0, ddof=1)
+
+    covar = 0.5 * (zvar - (xvar + yvar))
+
+    denom = 2 * covar
+    num = (yvar - xvar) + np.sqrt((yvar - xvar) * (yvar - xvar) + 4 * (covar * covar))
+    a = num / denom
+    b = ymean - a * xmean
+
+    # Initialise variables
+    left = 1
+    right = scale_max
+    mid = ((right - left) // (6 / 5)) + left
+    lastmid = 0
+    # Marks the value with the last positive R value.
+    valid = 1
+
+    while lastmid != mid:
+        thr_fi_c = mid / scale_max
+        thr_si_c = (a * thr_fi_c) + b
+        combt = (img1 < thr_fi_c) | (img2 < thr_si_c)
+        if np.count_nonzero(combt) <= 2:
+            # Can't run pearson with only 2 values.
+            left = mid - 1
+        else:
+            try:
+                costReg, _ = scipy.stats.pearsonr(img1[combt], img2[combt])
+                if costReg < 0:
+                    left = mid - 1
+                elif costReg >= 0:
+                    right = mid + 1
+                    valid = mid
+            except ValueError:
+                # Catch misc Pearson errors with low sample numbers
+                left = mid - 1
+        lastmid = mid
+        if right - left > 6:
+            mid = ((right - left) // (6 / 5)) + left
+        else:
+            mid = ((right - left) // 2) + left
+
+    thr_fi_c = (valid - 1) / scale_max
+    thr_si_c = (a * thr_fi_c) + b
+
+    return thr_fi_c, thr_si_c
 
 
 def auto_threshold(
@@ -25,65 +87,11 @@ def auto_threshold(
         img1[~img_as_bool(mask)] = 0
         img2[~img_as_bool(mask)] = 0
 
-    i_step = 1 / scale_max
-    non_zero = (img1 > 0) | (img2 > 0)
-    xvar = np.var(img1[non_zero], axis=0, ddof=1)
-    yvar = np.var(img2[non_zero], axis=0, ddof=1)
+    img1_threshold, img2_threshold = get_thresholds_using_bisection(
+        img1, img2, scale_max
+    )
 
-    xmean = np.mean(img1[non_zero], axis=0)
-    ymean = np.mean(img2[non_zero], axis=0)
+    img1_binary = img_as_ubyte(img1 > img1_threshold)
+    img2_binary = img_as_ubyte(img2 > img2_threshold)
 
-    z = img1[non_zero] + img2[non_zero]
-    zvar = np.var(z, axis=0, ddof=1)
-
-    covar = 0.5 * (zvar - (xvar + yvar))
-
-    denom = 2 * covar
-    num = (yvar - xvar) + np.sqrt((yvar - xvar) * (yvar - xvar) + 4 * (covar * covar))
-    a = num / denom
-    b = ymean - a * xmean
-
-    # Start at 1 step above the maximum value
-    img_max = max(img1.max(), img2.max())
-    i = i_step * ((img_max // i_step) + 1)
-
-    num_true = None
-    img1_max = img1.max()
-    img2_max = img2.max()
-
-    # Initialise without a threshold
-    costReg = pearson(img1, img2, mask)
-    thr_img1_c = i
-    thr_img2_c = (a * i) + b
-    while i > img1_max and (a * i) + b > img2_max:
-        i -= i_step
-    while i > i_step:
-        thr_img1_c = i
-        thr_img2_c = (a * i) + b
-        combt = (img1 < thr_img1_c) | (img2 < thr_img2_c)
-        try:
-            # Only run pearsonr if the input has changed.
-            if (positives := np.count_nonzero(combt)) != num_true:
-                costReg = pearson(img1[combt], img2[combt])
-                num_true = positives
-
-            if costReg <= 0:
-                break
-            elif i < i_step * 10:
-                i -= i_step
-            elif costReg > 0.45:
-                # We're way off, step down 10x
-                i -= i_step * 10
-            elif costReg > 0.35:
-                # Still far from 0, step 5x
-                i -= i_step * 5
-            elif costReg > 0.25:
-                # Step 2x
-                i -= i_step * 2
-            else:
-                i -= i_step
-        except ValueError:
-            break
-
-    # print(thr_img1_c, thr_img2_c)
-    return thr_img1_c, thr_img2_c
+    return img1_binary, img2_binary
