@@ -1,5 +1,5 @@
 import numpy as np
-from skimage import img_as_bool
+from skimage import img_as_bool, img_as_ubyte
 
 from .costes import get_thresholds_using_bisection
 
@@ -33,5 +33,5 @@ def manders(img1: np.ndarray, img2: np.ndarray, mask: np.ndarray = None):
     M1 = img1_thresh_c.sum() / tot_img1_thr_c
     M2 = img2_thresh_c.sum() / tot_img2_thr_c
 
-    return M1, M2
+    return M1, M2, img_as_ubyte(img1 > img1_thr), img_as_ubyte(img2 > img2_thr)
 

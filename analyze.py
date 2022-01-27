@@ -4,6 +4,8 @@ from glob import glob
 from skimage import io
 from tqdm import tqdm
 
+# import napari
+
 import functions
 from modules.pearson import pearson
 from modules.manders import manders
@@ -27,12 +29,18 @@ if __name__ == "__main__":
 
         (
             otsu_manders_m1,
-            otsu_manders_m2,
-            binary_otsu_img1,
-            binary_otsu_img2,
+            otsu_manders_m2, 
+            otsu_img1, 
+            otsu_img2
         ) = functions.manders_otsu(first_img, second_img, mask=mask)
 
-        costes_m1, costes_m2 = manders(img1=first_img, img2=second_img, mask=mask)
+        (
+            costes_m1, 
+            costes_m2,
+            costes_img1_thresholded, 
+            costes_img2_thresholded
+        ) = manders(img1=first_img, img2=second_img, mask=mask)
+
 
         first_img_fname = os.path.basename(p)
         second_img_fname = os.path.basename(second_img_paths[idx])
@@ -45,6 +53,14 @@ if __name__ == "__main__":
             "costes_manders_m1": costes_m1,
             "costes_manders_m2": costes_m2,
         }
+
+        # viewer = napari.Viewer()
+        # viewer.add_image(first_img)
+        # viewer.add_image(second_img)
+        # viewer.add_image(otsu_img1)
+        # viewer.add_image(otsu_img2)
+        # viewer.add_image(costes_img1_thresholded)
+        # viewer.add_image(costes_img2_thresholded)
 
         results.append(result)
 
