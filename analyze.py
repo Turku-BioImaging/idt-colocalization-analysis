@@ -4,12 +4,9 @@ from glob import glob
 from skimage import io
 from tqdm import tqdm
 
-# import napari
-
 import functions
 from modules.pearson import pearson
 from modules.manders import manders
-
 
 if __name__ == "__main__":
     # read images and masks
@@ -53,14 +50,6 @@ if __name__ == "__main__":
             "costes_manders_m1": costes_m1,
             "costes_manders_m2": costes_m2,
         }
-
-        # viewer = napari.Viewer()
-        # viewer.add_image(first_img)
-        # viewer.add_image(second_img)
-        # viewer.add_image(otsu_img1)
-        # viewer.add_image(otsu_img2)
-        # viewer.add_image(costes_img1_thresholded)
-        # viewer.add_image(costes_img2_thresholded)
 
         results.append(result)
 

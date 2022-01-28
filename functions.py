@@ -36,17 +36,25 @@ def pearson(img1, img2, mask=None):
     return np.corrcoef((img1_m, img2_m))[0][1]
 
 
-def manders_otsu(img1, img2, mask):
+def manders_otsu(img1, img2, mask=None):
 
     # try with otsu threshold
     img1_threshold = threshold_otsu(img1)
     img2_threshold = threshold_otsu(img2)
 
+    if mask is not None:
+        img1[~img_as_bool(mask)] = 0
+        img2[~img_as_bool(mask)] = 0
+
     binary_otsu_img1 = img1 > img1_threshold
     binary_otsu_img2 = img2 > img2_threshold
 
-    binary_otsu_img1[~img_as_bool(mask)] = 0
-    binary_otsu_img2[~img_as_bool(mask)] = 0
+    # if mask is not None:
+    #     img1[~img_as_bool(mask)] = 0
+    #     img2[~img_as_bool(mask)] = 0
+
+    # binary_otsu_img1[~img_as_bool(mask)] = 0
+    # binary_otsu_img2[~img_as_bool(mask)] = 0
 
     binary_combined = binary_otsu_img1 & binary_otsu_img2
 
