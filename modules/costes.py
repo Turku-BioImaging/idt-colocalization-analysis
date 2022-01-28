@@ -2,8 +2,7 @@ from skimage import img_as_ubyte, img_as_bool
 import scipy
 import numpy as np
 
-
-def get_thresholds_using_bisection(img1: np.ndarray, img2: np.ndarray, scale_max=255):
+def get_thresholds_using_bisection(img1: np.ndarray, img2: np.ndarray):
     """
     Adapted from CellProfiler measurecolocalization module.
 
@@ -14,6 +13,9 @@ def get_thresholds_using_bisection(img1: np.ndarray, img2: np.ndarray, scale_max
     at lower thresholds in some samples. Therefore the candidate tested in each
     loop is 1/6th of the window size below the maximum value (as opposed to the midpoint).
     """
+
+    # get max value of either image
+    scale_max = max(img1.max(), img2.max())
 
     non_zero = (img1 > 0) | (img2 > 0)
     xvar = np.var(img1[non_zero], axis=0, ddof=1)
