@@ -17,7 +17,7 @@ if __name__ == "__main__":
     results = []
 
     # loop through images
-    for idx, p in tqdm(enumerate(first_img_paths)):
+    for idx, p in tqdm(enumerate(first_img_paths), total=len(first_img_paths)):
         first_img = io.imread(first_img_paths[idx])
         second_img = io.imread(second_img_paths[idx])
         mask = io.imread(mask_paths[idx])
