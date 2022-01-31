@@ -9,6 +9,7 @@ WORKDIR /code
 
 COPY --chown=$MAMBA_USER:$MAMBA_USER ./environment-docker.yml /tmp/env.yml
 COPY analyze.py functions.py /code/
+COPY modules/ /code/modules/
 
 RUN micromamba install -y -f /tmp/env.yml \
     && micromamba clean --all --yes
