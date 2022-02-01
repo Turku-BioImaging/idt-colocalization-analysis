@@ -24,7 +24,11 @@ if __name__ == "__main__":
     # read images and masks
     first_img_paths = sorted(glob("data/first_images/*"))
     second_img_paths = sorted(glob("data/second_images/*"))
-    mask_paths = sorted(glob("data/masks/*"))
+
+    if args.with_masks == True:
+        mask_paths = sorted(glob("data/masks/*"))
+    else:
+        mask_paths = None
 
     results = []
 
@@ -32,36 +36,43 @@ if __name__ == "__main__":
     for idx, p in tqdm(enumerate(first_img_paths), total=len(first_img_paths)):
         first_img = io.imread(first_img_paths[idx])
         second_img = io.imread(second_img_paths[idx])
-        mask = io.imread(mask_paths[idx])
-
-        pearson_r = pearson(img1=first_img, img2=second_img, mask=mask)
-
-        (
-            otsu_manders_m1,
-            otsu_manders_m2, 
-            otsu_img1, 
-            otsu_img2
-        ) = functions.manders_otsu(first_img, second_img, mask=mask)
-
-        (
-            costes_m1, 
-            costes_m2,
-            costes_img1_thresholded, 
-            costes_img2_thresholded
-        ) = manders(img1=first_img, img2=second_img, mask=mask)
-
 
         first_img_fname = os.path.basename(p)
         second_img_fname = os.path.basename(second_img_paths[idx])
         result = {
             "first_image_fname": first_img_fname,
             "second_image_fname": second_img_fname,
-            "pearson_r": pearson_r,
-            "otsu_manders_m1": otsu_manders_m1,
-            "otsu_manders_m2": otsu_manders_m2,
-            "costes_manders_m1": costes_m1,
-            "costes_manders_m2": costes_m2,
         }
+
+        if mask_paths is not None:
+            mask = io.imread(mask_paths[idx])
+        else: 
+            mask = None
+
+        if args.pearson == True:
+            pearson_r = pearson(img1=first_img, img2=second_img, mask=mask)
+            result['pearson_r'] = pearson_r
+        if args.manders_otsu == True:
+            (
+                otsu_manders_m1,
+                otsu_manders_m2, 
+                otsu_img1, 
+                otsu_img2
+            ) = functions.manders_otsu(first_img, second_img, mask=mask)
+
+            result['otsu_manders_m1'] = otsu_manders_m1
+            result['otsu_manders_m2'] = otsu_manders_m2
+
+        if args.manders_costes == True:
+            (
+                costes_m1, 
+                costes_m2,
+                costes_img1_thresholded, 
+                costes_img2_thresholded
+            ) = manders(img1=first_img, img2=second_img, mask=mask)
+
+            result['costes_manders_m1'] = costes_m1
+            result['costes_manders_m2'] = costes_m2
 
         results.append(result)
 
