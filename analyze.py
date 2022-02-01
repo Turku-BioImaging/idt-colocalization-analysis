@@ -14,13 +14,12 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Analyze colocalization in images.', epilog='Turku BioImaging - Image Data Team - https://bioimaging.fi')
 
-    parser.add_argument('--pearson', dest='pearson', action='store_false', help='Calculate Pearson correlation coefficient')
-    parser.add_argument('--manders-threshold-otsu', dest='manders_otsu', action='store_false', help='Calculate Manders using Otsu thresholding')
-    parser.add_argument('--manders-threshold-costes', dest='manders_costes', action='store_true', help='Calculate Manders using Costes auto-thresholding')
-    parser.add_argument('--with-masks', dest='with_masks', action='store_false', help='Use masks to subtract background')
+    parser.add_argument('--disable-pearson', dest='pearson', action='store_false', help='Calculate Pearson correlation coefficient')
+    parser.add_argument('--disable-manders-otsu', dest='manders_otsu', action='store_false', help='Calculate Manders using Otsu thresholding')
+    parser.add_argument('--manders-costes', dest='manders_costes', action='store_true', help='Calculate Manders using Costes auto-thresholding')
+    parser.add_argument('--disable-masks', dest='with_masks', action='store_false', help='Use masks to subtract background')
     
     args = parser.parse_args()
-
     # read images and masks
     first_img_paths = sorted(glob("data/first_images/*"))
     second_img_paths = sorted(glob("data/second_images/*"))
