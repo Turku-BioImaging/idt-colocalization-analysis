@@ -77,5 +77,6 @@ if __name__ == "__main__":
         results.append(result)
 
     df = pd.DataFrame(results)
+    os.makedirs("results", exist_ok=True)
     df.to_csv("results/colocalization_results.csv")
 
