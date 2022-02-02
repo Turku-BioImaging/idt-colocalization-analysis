@@ -56,7 +56,7 @@ Enable Costes auto thresholding for Manders overlap coefficients:
 
 ## Credits
 
-**Image Data Analysis Team - Turku BioImaging**  
+**Image Data Team - Turku BioImaging**  
 Joanna Pylvänäinen - joanna.pylvanainen@abo.fi  
 Junel Solis - junel.solis@abo.fi  
 Dado Tokic - dado.tokic@abo.fi  
