@@ -10,6 +10,9 @@ import functions
 from modules.pearson import pearson
 from modules.manders import manders
 
+IMG_DIR = "data/images"
+MASK_DIR = "data/masks"
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Analyze colocalization in images.', epilog='Turku BioImaging - Image Data Team - https://bioimaging.fi')
