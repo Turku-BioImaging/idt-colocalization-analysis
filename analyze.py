@@ -47,8 +47,10 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     # read images and masks
-    first_img_paths = sorted(glob("data/first_images/*"))
-    second_img_paths = sorted(glob("data/second_images/*"))
+    # first_img_paths = sorted(glob("data/first_images/*"))
+    # second_img_paths = sorted(glob("data/second_images/*"))
+    img_paths = sorted(glob(f"{IMG_DIR}/*"))
+    mask_paths = sorted(glob(f"{MASK_DIR}/*"))
 
     if args.with_masks == True:
         mask_paths = sorted(glob("data/masks/*"))
@@ -58,12 +60,18 @@ if __name__ == "__main__":
     results = []
 
     # loop through images
-    for idx, p in tqdm(enumerate(first_img_paths), total=len(first_img_paths)):
-        first_img = io.imread(first_img_paths[idx])
-        second_img = io.imread(second_img_paths[idx])
+    for idx, p in tqdm(enumerate(img_paths), total=len(img_paths)):
 
-        first_img_fname = os.path.basename(p)
-        second_img_fname = os.path.basename(second_img_paths[idx])
+        # split the image channels
+        img = io.imread(p)
+        mask = io.imread(mask_paths[idx])
+
+        first_img = img[:, 0, :, :]
+        second_img = img[:, 1, :, :]
+
+        first_img_fname = os.path.basename(p).replace(".tif", "_c1.tif")
+        second_img_fname = os.path.basename(p).replace(".tif", "_c2.tif")
+
         result = {
             "first_image_fname": first_img_fname,
             "second_image_fname": second_img_fname,
