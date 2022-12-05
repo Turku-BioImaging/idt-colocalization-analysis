@@ -1,3 +1,6 @@
+
+<img src="images\BioImaging_logo_posa_vaaka.jpg" alt="drawing" width="400"/>
+
 # IDAT Colocalization Analysis
 
 This Docker container performs classic image colocalization analysis including Pearson correlation and Manders overlap coefficients. It accepts masks for background subtraction. Thresholding methods can be either Otsu or Costes.
