@@ -64,6 +64,3 @@ Pasi Kankaanpää - pasi.kankaanpaa@abo.fi
 
 **Turku BioImaging**  
 [https://bioimaging.fi](https://bioimaging.fi)
-
-**GitHub**
-[https://turku-bioimaging.github.io](https://turku-bioimaging.github.io)
